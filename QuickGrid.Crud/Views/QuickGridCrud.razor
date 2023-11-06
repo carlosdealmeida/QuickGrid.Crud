@@ -7,6 +7,8 @@
 @typeparam TController
 @typeparam TEntity
 
+@inherits QuickGridCrudBase<TItem,TController,TEntity>
+
 <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
     @if ((IsCrud))
     {

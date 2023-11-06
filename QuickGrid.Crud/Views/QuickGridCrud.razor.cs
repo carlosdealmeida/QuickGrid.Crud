@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace QuickGrid.Crud.Views
 {
-    public partial class QuickGridCrud<TItem, TController, TEntity>
+    public class QuickGridCrudBase<TItem, TController, TEntity>: ComponentBase
     {
         [Parameter] public Dictionary<string, ButtonGeneric<TItem>> Acoes { get; set; }
         [Parameter] public RenderFragment<TEntity>? FormTemplate { get; set; }
@@ -236,7 +236,7 @@ namespace QuickGrid.Crud.Views
             await InvokeAsync(StateHasChanged);
         }
 
-        private void UpdateVisibility(string key, bool value)
+        public void UpdateVisibility(string key, bool value)
         {
             if (columnVisibility.ContainsKey(key))
             {
@@ -297,13 +297,13 @@ namespace QuickGrid.Crud.Views
             }
         }
 
-        private void LimparDatas(string propertyName)
+        public void LimparDatas(string propertyName)
         {
             filterStateBanco.SetDateFilterStart(propertyName, null);
             filterStateBanco.SetDateFilterEnd(propertyName, null);
         }
 
-        private async Task ResetModel()
+        public async Task ResetModel()
         {
             filterStateBanco = new();
             await Listar();
