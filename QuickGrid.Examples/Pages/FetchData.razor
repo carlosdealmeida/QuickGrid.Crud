@@ -1,0 +1,20 @@
+﻿@page "/fetchdata"
+@using QuickGrid.Examples.Data
+@using QuickGrid.Crud.Views
+@using QuickGrid.Crud
+@inject WeatherForecastService ForecastService
+
+<PageTitle>Weather forecast</PageTitle>
+
+<h1>Weather forecast</h1>
+
+<QuickGridCrud TItem="WeatherForecast" TController="WeatherForecastService" TEntity="WeatherForecast" Configuration="Config" />
+
+@code {
+    private Configuration<WeatherForecast, WeatherForecastService, WeatherForecast> Config = new Configuration<WeatherForecast, WeatherForecastService, WeatherForecast>
+    {
+        IsCrud = false,
+        UseModal = false,
+    };
+
+}

@@ -1,0 +1,64 @@
+name: WACLOUD.Componentes
+
+on:
+  push:
+    branches:
+      - master
+      
+  workflow_dispatch:
+  
+permissions: write-all   
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Geração do pacote
+      run: dotnet pack QuickGrid.Crud/QuickGrid.Crud.csproj -c Release -o out -p:PackageVersion=0.$GITHUB_RUN_NUMBER
+    - name: zip linux artifact
+      run: |
+        zip -r "QuickGrid.Crud-0.${{ github.RUN_NUMBER }}.zip" out
+    - name: Criando Tag
+      env:
+        version: "0"
+      run: |
+        git tag "${{ env.version }}.${{ github.RUN_NUMBER }}"
+        git push origin --tags
+    - name: Criando Release da Tag
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        version: "4"
+      with:
+        tag_name: "${{ env.version }}.${{ github.RUN_NUMBER }}"
+        release_name: "${{ env.version }}.${{ github.RUN_NUMBER }}"
+        draft: true
+        prerelease: false
+
+    - uses: eregon/publish-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        release_id: ${{ steps.create_release.outputs.id }}
+
+    - name: Push no NuGet
+      run: |
+        cd out
+        dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+
+    - name: Upload da publicação
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        version: "QuickGrid.Crud-0"
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: "${{ github.workspace }}/${{ env.version }}.${{ github.RUN_NUMBER }}.zip"
+        asset_name: "${{ env.version }}.${{ github.RUN_NUMBER }}.zip"
+        asset_content_type: application/zip

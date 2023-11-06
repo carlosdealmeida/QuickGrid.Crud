@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<RootNamespace>quick_crud</RootNamespace>
+		<PackageId>QuickGrid.Crud</PackageId>
+		<Version>$(Version)</Version>
+		<Authors>Carlos Junior</Authors>
+		<Company>Carlos Junior</Company>
+		<RepositoryUrl>https://github.com/carlosdealmeida/QuickGrid.Crud.git</RepositoryUrl>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.Toast" Version="4.1.0" />
+    <PackageReference Include="ClosedXML" Version="0.102.1" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="0.1.0-alpha.22351.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+  </ItemGroup>
+
+</Project>

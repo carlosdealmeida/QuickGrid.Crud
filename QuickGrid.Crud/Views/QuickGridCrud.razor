@@ -1,0 +1,257 @@
+﻿@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.AspNetCore.Components.Authorization
+@using QuickGrid.Crud;
+@using QuickGrid.Crud.Views;
+
+@typeparam TItem
+@typeparam TController
+@typeparam TEntity
+
+<div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+    @if ((IsCrud))
+    {
+        <AuthorizeView Roles="@RolesCadastrar">
+            <div class="btn-group" role="group" aria-label="First group">
+                @if (UseModal)
+                {
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#formulario" @onclick="(() => SelecionarRegistro(true, ItemSelecionado))">
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                }
+                else
+                {
+                    <a href="@LinkForm" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i>
+                    </a>
+                }
+            </div>
+        </AuthorizeView>
+    }
+    <div class="btn-group" role="group">
+        <div class="btn-group" role="group">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownFilter" data-bs-toggle="dropdown" aria-expanded="false" title="Filtros">
+                <i class="bi bi-funnel"></i>
+            </button>
+            <div class="dropdown-menu p-4" aria-labelledby="dropdownFilter" style="width:500px;">
+                <div class="card">
+                    <div class="card-body">
+                        <form>
+                            @foreach (var prop in typeof(TItem).GetProperties())
+                            {
+                                bool podeFiltrar = false;
+
+                                foreach (Attribute attr in prop.GetCustomAttributes(true))
+                                {
+                                    if (attr is GridPodeFiltrar gridPodeFiltrar)
+                                    {
+                                        podeFiltrar = gridPodeFiltrar.podeFiltrar;
+                                    }
+                                }
+
+                                if (podeFiltrar)
+                                {
+                                    @if (prop.PropertyType == typeof(string))
+                                    {
+                                        <div class="mb-3">
+                                            <label for="@prop.Name" class="form-label">@prop.Name</label>
+                                            <input type="text"
+                                                   class="form-control"
+                                                   autofocus
+                                                   value="@filterStateBanco.GetStringFilter(prop.Name)"
+                                                   @oninput="e => filterStateBanco.SetStringFilter(prop.Name, e.Value.ToString())"
+                                                   placeholder="" />
+                                        </div>
+
+                                    }
+                                    else if (prop.PropertyType == typeof(int))
+                                    {
+                                        <div class="mb-3">
+                                            <label for="@prop.Name" class="form-label">@prop.Name</label>
+                                            <input type="number"
+                                                   class="form-control"
+                                                   autofocus
+                                                   value="@filterStateBanco.GetIntFilter(prop.Name)"
+                                                   @oninput="e => filterStateBanco.SetIntFilter(prop.Name, int.Parse(e.Value.ToString()))"
+                                                   placeholder="" />
+                                        </div>
+                                    }
+                                    else if (prop.PropertyType == typeof(DateTime))
+                                    {
+                                        <div class="mb-3">
+                                            <label for="@prop.Name" class="form-label">@prop.Name</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">De</span>
+                                                <input type="date"
+                                                       class="form-control"
+                                                       value="@filterStateBanco.GetDateFilter(prop.Name).Start?.ToString("yyyy-MM-dd")"
+                                                       @oninput="e => filterStateBanco.SetDateFilterStart(prop.Name, DateTime.Parse(e.Value.ToString()))" />
+                                                <span class="input-group-text">Até</span>
+                                                <input type="date"
+                                                       class="form-control"
+                                                       value="@filterStateBanco.GetDateFilter(prop.Name).End?.ToString("yyyy-MM-dd")"
+                                                       @oninput="e => filterStateBanco.SetDateFilterEnd(prop.Name, DateTime.Parse(e.Value.ToString()))" />
+                                                <button type="button" class="btn btn-outline-secondary" @onclick="() => LimparDatas(prop.Name)" @onclick:stopPropagation>
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </form>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-warning" @onclick="ResetModel">Resetar</button>
+                            <button type="button" class="btn btn-success" @onclick="Listar">Filtrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group" role="group">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Exportar">
+                <i class="bi bi-folder-symlink"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li><button class="dropdown-item" @onclick="() => ExportarAsync(Constants.extensionXLSX)"><i class="bi bi-filetype-xlsx"></i>&nbsp;MS-Excel</button></li>
+                <li><button class="dropdown-item" @onclick="() => ExportarAsync(Constants.extensionCSV)"><i class="bi bi-filetype-csv"></i>&nbsp;CSV</button></li>
+                <li><button class="dropdown-item" @onclick="() => ExportarAsync(Constants.extensionTXT)"><i class="bi bi-filetype-txt"></i>&nbsp;TXT</button></li>
+                <li><button class="dropdown-item" @onclick="() => ExportarAsync(Constants.extensionXML)"><i class="bi bi-filetype-xml"></i>&nbsp;XML</button></li>
+            </ul>
+        </div>
+        <div class="btn-group" role="group">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="bi bi-list-task"></i>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                @foreach (var key in columnVisibility.Keys.ToList())
+                {
+                    <label class="dropdown-item">
+                        <input type="checkbox" checked="@columnVisibility[key]" @onchange="e => UpdateVisibility(key, (bool)e.Value)" /> @key
+                    </label>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal @TamanhoModal fade" id="formulario" tabindex="-1" aria-labelledby="formulario" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="formulario">Novo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                @if (ItemSelecionado is not null)
+                {
+                    @FormTemplate(ItemSelecionado)
+                }
+            </div>
+            @*            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="(() => Salvar(ItemSelecionado))">Salvar</button>
+            </div>*@
+        </div>
+    </div>
+</div>
+
+<QuickGrid Items="@ItemsFiltro" Pagination="@pagination" class="table table-striped table-hover table-bordered">
+    @foreach (var prop in typeof(TItem).GetProperties())
+    {
+        bool podeFiltrar = false;
+        bool visivel = false;
+
+        foreach (Attribute attr in prop.GetCustomAttributes(true))
+        {
+            if (attr is GridPodeFiltrar gridPodeFiltrar)
+            {
+                podeFiltrar = gridPodeFiltrar.podeFiltrar;
+            }
+        }
+
+        visivel = columnVisibility.Where(c => c.Key == prop.Name).FirstOrDefault().Value;
+
+        string name = prop.Name;
+        if (visivel && !podeFiltrar)
+        {
+            <PropertyColumn Property="@((item) => prop.GetValue(item))" Sortable="true" Title="@prop.Name" />
+        }
+
+        if (visivel && podeFiltrar)
+        {
+            <PropertyColumn Property="@((item) => prop.GetValue(item))" Sortable="true" Title="@prop.Name">
+                <ColumnOptions>
+                    <div class="search-box">
+                        @if (prop.PropertyType == typeof(string))
+                        {
+                            <input type="search" autofocus value="@filterStateGrid.GetStringFilter(name)" @oninput="e => filterStateGrid.SetStringFilter(name, e.Value.ToString())" placeholder="@prop.Name" />
+                        }
+
+                        @if (prop.PropertyType == typeof(DateTime))
+                        {
+                            <span>De&nbsp;</span>
+                            <input type="date" value="@filterStateGrid.GetDateFilter(name).Start?.ToString("yyyy-MM-dd")" @onchange="e => filterStateGrid.SetDateIfValid(e, (date) => filterStateGrid.SetDateFilterStart(name, date))" placeholder="De" />
+                            <br />
+                            <span>Até</span>
+                            <input type="date" value="@filterStateGrid.GetDateFilter(name).End?.ToString("yyyy-MM-dd")" @onchange="e => filterStateGrid.SetDateIfValid(e, (date) => filterStateGrid.SetDateFilterEnd(name, date))" placeholder="Até" />
+                        }
+
+                        @if (prop.PropertyType == typeof(bool))
+                        {
+                            //BoolFilters[prop.Name] = false;
+                        }
+
+                        @if (prop.PropertyType == typeof(int))
+                        {
+                            <input type="number" autofocus value="@filterStateGrid.GetIntFilter(name)" @oninput="e => {if(!string.IsNullOrEmpty(e.Value.ToString())){filterStateGrid.SetIntFilter(name, int.Parse(e.Value.ToString()));}}" placeholder="@prop.Name" />
+                        }
+                    </div>
+                </ColumnOptions>
+            </PropertyColumn>
+        }
+    }
+
+    @if (Configuration != null && Configuration.CanEdit)
+    {
+        <TemplateColumn Align="Align.Center">
+            @if (UseModal)
+            {
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#formulario" @onclick="(() => SelecionarRegistro(false, ItemSelecionado))">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+            }
+            else
+            {
+                <a href="@LinkForm/@context.GetType().GetProperty(Configuration.KeyPropertyName).GetValue(context)" class="btn btn-primary">
+                    <i class="bi bi-pencil-square"></i>
+                </a>
+            }
+        </TemplateColumn>
+    }
+
+
+    @if (Acoes != null)
+    {
+        @foreach (var column in Acoes)
+        {
+
+            @if (!column.Value.RoleRequired.Any())
+            {
+                <TemplateColumn Align="Align.Center">
+                    @((RenderFragment)(builder => { RenderColumn(builder, context, column.Value); }))
+                </TemplateColumn>
+            }
+            else if (column.Value.RoleRequired.Any(role => userRoles.Contains(role)))
+            {
+                <TemplateColumn Align="Align.Center">
+                    @((RenderFragment)(builder => { RenderColumn(builder, context, column.Value); }))
+                </TemplateColumn>
+            }
+            else
+            {
+                BuildNotAuthorized();
+            };
+        }
+    }
+</QuickGrid>
+<Paginator Value="@pagination" />
