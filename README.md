@@ -33,11 +33,11 @@ using QuickGrid.Crud;
 
 O QuickGrid.Crud usa o padrão MVC, onde:
 
-TItem - É a nossa Model, ela representa os campos disponíveis para o QuickGrid.Crud.
+**TItem** - É a nossa Model, ela representa os campos disponíveis para o QuickGrid.Crud.  
 
-QuickGridCrud - É a nossa View, ela é renderizada pelo código acima.
+**QuickGridCrud** - É a nossa View, ela é renderizada pelo código acima.  
 
-TController - É a nossa Controller, lá ficará os métodos que podem ser acessíveis pelo QuickGrid.Crud.
+**TController** - É a nossa Controller, lá ficará os métodos que podem ser acessíveis pelo QuickGrid.Crud.  
 
 Mas e o TEntity? O TEntity representa nossa entidade na fonte de dados. Ela pode ser uma outra classe ou até mesmo a nossa Model definida em TItem.
 Ela fica responsável para montagem da parte do filtro no banco de dados.
