@@ -10,11 +10,13 @@
 		<Company>Carlos Junior</Company>
 		<RepositoryUrl>https://github.com/carlosdealmeida/QuickGrid.Crud.git</RepositoryUrl>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
+	<None Include="README.md" Pack="true" PackagePath="..\"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
