@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickGrid.Crud", "QuickGrid.Crud.csproj", "{151E47D7-6D69-4018-A166-593A5F5AAAE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickGrid.Examples", "..\QuickGrid.Examples\QuickGrid.Examples.csproj", "{D7CCC7A1-FD68-487B-8F07-CF4EFFE414D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickGrid.Examples", "..\QuickGrid.Examples\QuickGrid.Examples.csproj", "{D7CCC7A1-FD68-487B-8F07-CF4EFFE414D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
