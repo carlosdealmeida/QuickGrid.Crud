@@ -14,6 +14,8 @@ namespace quick_crud
                 return 7;
             #elif NET8_0
                 return 8;
+            #elif NET6_0
+                return 6;
             #endif
         }
     }

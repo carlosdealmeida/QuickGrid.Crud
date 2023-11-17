@@ -256,7 +256,7 @@
         }
     }
 </QuickGrid>
-@if (Utilitarios.GetVersionNET() == 7)
+@if ((Utilitarios.GetVersionNET() == 7) || (Utilitarios.GetVersionNET() == 6))
 {
     <Paginator Value="@pagination" />
 }
