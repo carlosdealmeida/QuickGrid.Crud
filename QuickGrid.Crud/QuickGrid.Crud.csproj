@@ -11,12 +11,14 @@
 		<RepositoryUrl>https://github.com/carlosdealmeida/QuickGrid.Crud.git</RepositoryUrl>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
 	</PropertyGroup>
 
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
-	<None Include="docs\README.md" Pack="true" PackagePath="\"/>
+	<None Include="docs\README.md" Pack="true" PackagePath="\" />
+	<None Include="docs\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
