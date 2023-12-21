@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Blazored.Toast.Services;
+using quick_crud.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,5 +24,6 @@ namespace QuickGrid.Crud
         public TItem Item { get; set; }
         public TController Controller { get; set; }
         public TEntity Entity { get; set; }
+        public Type ServiceBaseType { get; set; }
     }
 }

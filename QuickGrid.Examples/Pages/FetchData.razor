@@ -1,6 +1,7 @@
 ﻿@page "/fetchdata"
 @using QuickGrid.Examples.Data
 @using QuickGrid.Crud
+@using quick_crud.Services;
 @using quick_crud.Views
 @inject WeatherForecastService ForecastService
 
@@ -11,10 +12,13 @@
 <QuickGridCrud TItem="WeatherForecast" TController="WeatherForecastService" TEntity="WeatherForecast" Configuration="Config" />
 
 @code {
+
+
     private Configuration<WeatherForecast, WeatherForecastService, WeatherForecast> Config = new Configuration<WeatherForecast, WeatherForecastService, WeatherForecast>
     {
         IsCrud = false,
         UseModal = false,
+        ServiceBaseType = typeof(ServiceTest)
     };
 
 }

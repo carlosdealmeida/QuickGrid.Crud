@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.JSInterop;
+using quick_crud.Services;
 using QuickGrid.Crud.Helpers;
 using System;
 using System.Collections.Generic;
@@ -32,6 +34,8 @@ namespace QuickGrid.Crud.Views
         [Inject] public NavigationManager navigation { get; set; }
         [Inject] public IJSRuntime JSRuntime { get; set; }
         [Inject] public IToastService toastService { get; set; }
+        [Inject] public IServiceProvider ServiceProvider { get; set; }
+        public IServiceBase ServiceBase { get; set; }
         public PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
         public FilterGenericState filterStateBanco = new FilterGenericState();
         private FilterGenericState _previousFilterStateGrid;
@@ -228,6 +232,11 @@ namespace QuickGrid.Crud.Views
                 IsCrud = Configuration.IsCrud;
                 TamanhoModal = Configuration.SizeModal;
                 RolesCadastrar = Configuration.RolesCadastrar;
+
+                if (Configuration.ServiceBaseType != null)
+                {
+                    ServiceBase = (IServiceBase)ServiceProvider.GetService(Configuration.ServiceBaseType);
+                }
             }
 
 
@@ -247,7 +256,17 @@ namespace QuickGrid.Crud.Views
         public async Task Listar()
         {
             Type analisar = typeof(TController);
-            var controller = Activator.CreateInstance(analisar);
+            object controller;
+
+            if (Configuration.ServiceBaseType != null)
+            {
+                controller = Activator.CreateInstance(analisar, ServiceBase);
+            }
+            else
+            {
+                controller = Activator.CreateInstance(analisar);
+            }
+                
 
             string method;
 

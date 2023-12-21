@@ -4,10 +4,15 @@ namespace QuickGrid.Examples.Data
 {
     public class WeatherForecastService
     {
+        public ServiceTest service;
+        public WeatherForecastService(ServiceTest service)
+        {
+            this.service = service;
+        }
         private static readonly string[] Summaries = new[]
         {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
 
         public Task<IQueryable<WeatherForecast>> GetAll(Expression<Func<WeatherForecast, bool>> pred)
         {
