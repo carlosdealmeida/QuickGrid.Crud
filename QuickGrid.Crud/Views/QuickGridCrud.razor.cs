@@ -258,7 +258,7 @@ namespace QuickGrid.Crud.Views
             Type analisar = typeof(TController);
             object controller;
 
-            if (Configuration.ServiceBaseType != null)
+            if (Configuration != null && Configuration.ServiceBaseType != null)
             {
                 controller = Activator.CreateInstance(analisar, ServiceBase);
             }
