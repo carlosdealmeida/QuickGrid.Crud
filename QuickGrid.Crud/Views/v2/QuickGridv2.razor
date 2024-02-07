@@ -1,0 +1,113 @@
+﻿@using Microsoft.Fast.Components.FluentUI
+@using QuickGrid.Crud
+@typeparam TItem
+
+
+    <div class="btn-toolbar justify-content-between" role="toolbar">
+        &nbsp;
+        <div class="btn-group" role="group">
+            <div class="btn-group" role="group">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                    <i class="bi bi-asterisk"></i>
+                </button>
+                <div class="dropdown-menu">
+                    @foreach (var key in columnVisibility.Keys.ToList())
+                    {
+                        <label class="dropdown-item">
+                            <input type="checkbox" checked="@columnVisibility[key]" @onchange="e => UpdateVisibility(key, (bool)e.Value)" /> @key
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="btn-group" role="group">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownFilter" data-bs-toggle="dropdown" aria-expanded="false" title="Filtros">
+                    <i class="bi bi-funnel"></i>
+                </button>
+                <div class="dropdown-menu p-4" aria-labelledby="dropdownFilter" style="width:500px;">
+                    <div class="card">
+                        <div class="card-body">
+                            @FormFiltro
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group" role="group">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                    <i class="bi bi-list-task"></i>
+                </button>
+                <div class="dropdown-menu p-3">
+                    Itens por página:
+                    <select class="form-select" @bind="@pagination.ItemsPerPage">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="500">500</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btn-group" role="group">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Exportar">
+                    <i class="bi bi-folder-symlink"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><button class="dropdown-item" @onclick="() => ExportarAsync(Constants.extensionXLSX)"><i class="bi bi-filetype-xlsx"></i>&nbsp;MS-Excel</button></li>
+                    <li><button class="dropdown-item" @onclick="() => ExportarAsync(Constants.extensionCSV)"><i class="bi bi-filetype-csv"></i>&nbsp;CSV</button></li>
+                    <li><button class="dropdown-item" @onclick="() => ExportarAsync(Constants.extensionTXT)"><i class="bi bi-filetype-txt"></i>&nbsp;TXT</button></li>
+                    <li><button class="dropdown-item" @onclick="() => ExportarAsync(Constants.extensionXML)"><i class="bi bi-filetype-xml"></i>&nbsp;XML</button></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+@if (ItensFiltro == null)
+{
+    <div class="w-100 d-flex text-center justify-content-center">
+        <span class="sr-only mt-1 me-2">Carregando dados...</span>
+        <div class="spinner-border" role="status"></div>
+    </div>
+}
+else
+{
+    <FluentDataGrid Items="@ItensFiltro" ResizableColumns=true class="table table-bordered table-hover table-striped table-sm" Pagination="@pagination">
+        @foreach (var prop in typeof(TItem).GetProperties())
+        {
+            bool podeFiltrar = false;
+            bool visivel = false;
+            string tituloCol = "";
+
+            foreach (Attribute attr in prop.GetCustomAttributes(true))
+            {
+                if (attr is GridPodeFiltrar gridPodeFiltrar)
+                {
+                    podeFiltrar = gridPodeFiltrar.podeFiltrar;
+                }
+
+                if (attr is GridTituloColuna gridTituloColuna)
+                {
+                    tituloCol = gridTituloColuna.tituloColuna;
+                }
+            }
+
+            if (tituloCol == "")
+            {
+                tituloCol = prop.Name;
+            };
+
+            visivel = columnVisibility.Where(c => c.Key == tituloCol).FirstOrDefault().Value;
+
+            if (visivel)
+            {
+                <PropertyColumn Property="@((item) => prop.GetValue(item))" Sortable="true" Title="@tituloCol" />
+            }
+        }
+    </FluentDataGrid>
+    <FluentPaginator State="@pagination">
+        <SummaryTemplate>
+            <strong>@(pagination.TotalItemCount ?? 0)</strong> registros
+        </SummaryTemplate>
+        <PaginationTextTemplate>
+            <strong>@(pagination.CurrentPageIndex + 1)</strong> de <strong>@(pagination.LastPageIndex + 1)</strong><br />
+        </PaginationTextTemplate>
+    </FluentPaginator>
+}
