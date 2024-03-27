@@ -9,10 +9,39 @@
 
 <h1>Weather forecast</h1>
 
-<QuickGridCrud TItem="WeatherForecast" TController="WeatherForecastService" TEntity="WeatherForecast" Configuration="Config" />
+
+<quick_crud.Views.v2.QuickGridv2 TItem="WeatherForecast" lstItens="lista" Acoes="botoes"></quick_crud.Views.v2.QuickGridv2>
 
 @code {
+    IQueryable<WeatherForecast> lista;
+    public Dictionary<string, ButtonGeneric<WeatherForecast>> botoes = new();
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        lista = await ForecastService.GetAllV2();
 
+        botoes = new()
+        {
+            {
+                "Ir para Counter", new ButtonGeneric<WeatherForecast>
+                {
+                    ActionEvent = EventCallback.Factory.Create(this, (WeatherForecast sub) => {SelecionarRegistro(sub); }),
+                    ClassCSS = "btn btn-primary",
+                    RoleRequired = new HashSet<string>{},
+                    Title = "<i class=\"bi bi-paperclip\"></i> Ir para Counter"
+                }
+            },
+            {
+                "Ir para Index", new ButtonGeneric<WeatherForecast>
+                {
+                    ActionEvent = EventCallback.Factory.Create(this, (WeatherForecast sub) => {SelecionarRegistro(sub); }),
+                    ClassCSS = "btn btn-primary",
+                    RoleRequired = new HashSet<string>{},
+                    Title = "<i class=\"bi bi-paperclip\"></i> Ir para Index"
+                }
+            },
+        };
+    }
 
     private Configuration<WeatherForecast, WeatherForecastService, WeatherForecast> Config = new Configuration<WeatherForecast, WeatherForecastService, WeatherForecast>
     {
@@ -20,5 +49,11 @@
         UseModal = false,
         ServiceBaseType = typeof(ServiceTest)
     };
+
+    public async void SelecionarRegistro(WeatherForecast sub)
+    {
+        NavigationManager.NavigateTo($"/Counter");
+        await InvokeAsync(StateHasChanged);
+    }
 
 }

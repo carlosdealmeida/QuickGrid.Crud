@@ -15,5 +15,8 @@ namespace QuickGrid.Examples.Data
         [GridVisivel(true)]
         [GridPodeFiltrar(true)]
         public string? Summary { get; set; }
+        [GridVisivel(true)]
+        [GridTemplateColumn(true)]
+        public string Link { get; set; }
     }
 }

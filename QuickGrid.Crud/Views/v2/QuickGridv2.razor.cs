@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QuickGrid.Crud;
 using QuickGrid.Crud.Helpers;
+using Microsoft.AspNetCore.Components.Rendering;
 
 namespace quick_crud.Views.v2
 {
@@ -26,9 +27,11 @@ namespace quick_crud.Views.v2
 		public FilterGenericState filterStateGrid = new FilterGenericState();
 		public Dictionary<string, bool> columnVisibility = new Dictionary<string, bool>();
 		public PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
-		[Parameter] public IQueryable<TItem> lstItens { get; set; }
+        public HashSet<string> userRoles = new();
+        [Parameter] public IQueryable<TItem> lstItens { get; set; }
 		[Parameter] public RenderFragment? FormFiltro { get; set; }
-		public IQueryable<TItem> ItensFiltro
+        [Parameter] public Dictionary<string, ButtonGeneric<TItem>> Acoes { get; set; }
+        public IQueryable<TItem> ItensFiltro
 		{
 			get
 			{
@@ -227,16 +230,16 @@ namespace quick_crud.Views.v2
 						tituloCol = gridTituloColuna.tituloColuna;
 					}
 
-					if (attr is GridVisivel gridVisivel)
+                    if (tituloCol == "")
+                    {
+                        tituloCol = prop.Name;
+                    };
+
+                    if (attr is GridVisivel gridVisivel)
 					{
 						columnVisibility[tituloCol] = true;
 					}
 				}
-
-				if (tituloCol == "")
-				{
-					tituloCol = prop.Name;
-				};
 			}
 		}
 
@@ -245,5 +248,53 @@ namespace quick_crud.Views.v2
 			pagination.ItemsPerPage = int.Parse(e.Value.ToString());
 			await InvokeAsync(StateHasChanged);
 		}
-	}
+
+        public void RenderColumn(RenderTreeBuilder builder, TItem item, ButtonGeneric<TItem> acao)
+        {
+
+            if (!acao.RoleRequired.Any())
+            {
+                BuildAuthorizedButton(item, acao)(builder);
+            }
+            else if (acao.RoleRequired.Any(role => userRoles.Contains(role)))
+            {
+                BuildAuthorizedButton(item, acao)(builder);
+            }
+            else
+            {
+                BuildNotAuthorized();
+            };
+        }
+
+        public RenderFragment BuildNotAuthorized() => builder => { };
+
+        public RenderFragment BuildAuthorizedButton(TItem item, ButtonGeneric<TItem> acao) => builder =>
+        {
+            int seq = 0;
+            var condicaoCorrespondente = acao.Conditions?.FirstOrDefault(cond => cond.Verify(item));
+            var classCss = condicaoCorrespondente?.ClassCSS ?? acao.ClassCSS;
+            var BSToggle = condicaoCorrespondente?.BSToggle ?? acao.BSToggle;
+            var BSTarget = condicaoCorrespondente?.BSTarget ?? acao.BSTarget;
+            var titulo = condicaoCorrespondente?.Title ?? acao.Title;
+            var eventCall = condicaoCorrespondente?.ActionEvent ?? acao.ActionEvent;
+
+            builder.OpenElement(seq++, "button");
+            builder.AddAttribute(seq++, "class", classCss);
+            builder.AddAttribute(seq++, "type", "button");
+            builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, () => eventCall.InvokeAsync(item)));
+
+            if (!string.IsNullOrEmpty(BSToggle))
+            {
+                builder.AddAttribute(seq++, "data-bs-toggle", BSToggle);
+            }
+
+            if (!string.IsNullOrEmpty(BSTarget))
+            {
+                builder.AddAttribute(seq++, "data-bs-target", BSTarget);
+            }
+
+            builder.AddContent(seq++, ((MarkupString)titulo));
+            builder.CloseElement();
+        };
+    }
 }

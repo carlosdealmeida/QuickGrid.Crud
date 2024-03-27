@@ -70,4 +70,15 @@ namespace QuickGrid.Crud
             this.tituloColuna = tituloColuna;
         }
     }
+
+    [System.AttributeUsage(System.AttributeTargets.Property)]
+    public class GridTemplateColumn : System.Attribute
+    {
+        public bool ehTemplateColumn { get; set; }
+
+        public GridTemplateColumn(bool ehTemplateColumn)
+        {
+            this.ehTemplateColumn = ehTemplateColumn;
+        }
+    }
 }

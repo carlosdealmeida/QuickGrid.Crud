@@ -20,7 +20,19 @@ namespace QuickGrid.Examples.Data
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
                 TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)],
+                Link = "<a class = 'btn btn-primary' href = 'https://www.google.com'>TESTE</a>"
+            }).AsQueryable());
+        }
+
+        public Task<IQueryable<WeatherForecast>> GetAllV2()
+        {
+            return Task.FromResult(Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)],
+                Link = "<a class = 'btn btn-primary' href = 'https://www.google.com'>TESTE</a>"
             }).AsQueryable());
         }
     }

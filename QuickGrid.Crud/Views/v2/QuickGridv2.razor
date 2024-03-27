@@ -75,6 +75,7 @@ else
             bool podeFiltrar = false;
             bool visivel = false;
             string tituloCol = "";
+            bool ehTemplateColumn = false;
 
             foreach (Attribute attr in prop.GetCustomAttributes(true))
             {
@@ -87,6 +88,11 @@ else
                 {
                     tituloCol = gridTituloColuna.tituloColuna;
                 }
+
+                if (attr is GridTemplateColumn gridTemplateColumn)
+                {
+                    ehTemplateColumn = gridTemplateColumn.ehTemplateColumn;
+                }
             }
 
             if (tituloCol == "")
@@ -96,9 +102,39 @@ else
 
             visivel = columnVisibility.Where(c => c.Key == tituloCol).FirstOrDefault().Value;
 
-            if (visivel)
+            if (visivel && !ehTemplateColumn)
             {
                 <PropertyColumn Property="@((item) => prop.GetValue(item))" Sortable="true" Title="@tituloCol" />
+            }
+
+            if (visivel && ehTemplateColumn)
+            {
+                <TemplateColumn Title="@tituloCol">
+                    @(new MarkupString((string)context.GetType().GetProperty(prop.Name).GetValue(context)))
+                </TemplateColumn>
+            }
+        }
+        @if (Acoes != null)
+        {
+            @foreach (var column in Acoes)
+            {
+
+                @if (!column.Value.RoleRequired.Any())
+                {
+                    <TemplateColumn Align="Align.Center">
+                        @((RenderFragment)(builder => { RenderColumn(builder, context, column.Value); }))
+                    </TemplateColumn>
+                }
+                else if (column.Value.RoleRequired.Any(role => userRoles.Contains(role)))
+                {
+                    <TemplateColumn Align="Align.Center">
+                        @((RenderFragment)(builder => { RenderColumn(builder, context, column.Value); }))
+                    </TemplateColumn>
+                }
+                else
+                {
+                    BuildNotAuthorized();
+                };
             }
         }
     </FluentDataGrid>
