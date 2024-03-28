@@ -69,7 +69,7 @@
 }
 else
 {
-    <FluentDataGrid Items="@ItensFiltro" ResizableColumns=true class="table table-bordered table-hover table-striped table-sm" Pagination="@pagination">
+    <FluentDataGrid Items="@ItensFiltro" ResizableColumns=true class="table-sm" Pagination="@pagination">
         @foreach (var prop in typeof(TItem).GetProperties())
         {
             bool podeFiltrar = false;
