@@ -2,13 +2,14 @@
 @using QuickGrid.Examples.Data
 @using QuickGrid.Crud
 @using quick_crud.Services;
-@using quick_crud.Views
+@using quick_crud.Views;
 @inject WeatherForecastService ForecastService
 
 <PageTitle>Weather forecast</PageTitle>
 
 <h1>Weather forecast</h1>
 
+<QuickGridCrud TItem="WeatherForecast" TController="WeatherForecastService" TEntity="WeatherForecast" Configuration="Config" />
 
 <quick_crud.Views.v2.QuickGridv2 TItem="WeatherForecast" lstItens="lista" Acoes="botoes"></quick_crud.Views.v2.QuickGridv2>
 

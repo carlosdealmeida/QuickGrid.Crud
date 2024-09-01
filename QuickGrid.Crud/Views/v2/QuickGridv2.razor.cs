@@ -167,6 +167,7 @@ namespace quick_crud.Views.v2
 				};
 
 				ColunaPropriedadeNome.Add(tituloCol, prop.Name);
+				tituloCol = "";
 			}
 
 			var filteredItems = ItensFiltro.ToList().Select(item =>
