@@ -1,4 +1,9 @@
-# QuickGrid.Crud - Em Construção...
+# QuickGrid.Crud
+
+> [!WARNING]
+> **Projeto arquivado, sem manutenção.** Ele mira .NET 6, 7 e 8, todos fora de suporte, e depende de pacotes já descontinuados (`Microsoft.Fast.Components.FluentUI` 3.x e `Microsoft.AspNetCore.Mvc.*` 2.2). O pacote no NuGet continua disponível, mas não recebe correções. Para projetos novos, considere o DataGrid do [MudBlazor](https://mudblazor.com/components/datagrid), do [Radzen](https://blazor.radzen.com/datagrid) ou do [Fluent UI Blazor](https://www.fluentui-blazor.net/DataGrid).
+>
+> *Archived and unmaintained. Targets out-of-support .NET versions and deprecated packages.*
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/carlosdealmeida/QuickGrid.Crud)
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/carlosdealmeida/QuickGrid.Crud)
